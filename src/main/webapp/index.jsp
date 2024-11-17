@@ -101,6 +101,7 @@
         </c:if>
         <a href="register.jsp" class="btn btn-primary">Register</a>
         <a href="products" class="btn btn-primary">Products</a>
+        <a href="customer_rewards.jsp" class="btn btn-primary">Customer Rewards</a>
     </div>
 </div>
 </body>
