@@ -1,7 +1,7 @@
 async function getPackages() {
     try {
         const packageSelect = $("#fldPackageSelect");
-        const response = await fetch('http://localhost:8080/TravelExpertsRestJPA_war_exploded/api/package');
+        const response = await fetch('http://localhost:8080/TravelExpertsREST_war_exploded/api/packages');
         const packages = await response.json();
         console.log(packages);
 
@@ -25,7 +25,7 @@ async function getPackages() {
 
 async function getPackage(id) {
     try {
-        const response = await fetch('http://localhost:8080/TravelExpertsRestJPA_war_exploded/api/package/' + id);
+        const response = await fetch('http://localhost:8080/TravelExpertsREST_war_exploded/api/packages/' + id);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -75,7 +75,7 @@ async function addOrUpdate() {
     try {
         if (id) {
             packageData.id = id;
-            const response = await fetch(`http://localhost:8080/TravelExpertsRestJPA_war_exploded/api/package/putpackage`, {
+            const response = await fetch(`http://localhost:8080/TravelExpertsREST_war_exploded/api/packages/putpackage`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json'
@@ -87,7 +87,7 @@ async function addOrUpdate() {
             await getPackages();
             alert("Package updated successfully!");
         } else {
-            const response = await fetch(`http://localhost:8080/TravelExpertsRestJPA_war_exploded/api/package/postpackage`, {
+            const response = await fetch(`http://localhost:8080/TravelExpertsREST_war_exploded/api/packages/postpackage`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -137,7 +137,7 @@ $(document).ready(function() {
 
     $('#deletePackageButton').on('click', async function() {
         const id = fldPackageId.val();  // Assuming the package ID is stored here
-        console.log(`http://localhost:8080/TravelExpertsRestJPA_war_exploded/api/package/` + id);
+        console.log(`http://localhost:8080/TravelExpertsREST_war_exploded/api/packages/` + id);
         if (!id) {
             alert('Please select a package to delete.');
             return;
@@ -149,7 +149,7 @@ $(document).ready(function() {
 
         try {
             // DELETE request to remove package
-            const response = await fetch(`http://localhost:8080/TravelExpertsRestJPA_war_exploded/api/package/` + id, {
+            const response = await fetch(`http://localhost:8080/TravelExpertsREST_war_exploded/api/packages/` + id, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json'
