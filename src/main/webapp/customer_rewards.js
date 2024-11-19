@@ -87,12 +87,15 @@ function saveCustomerRewards() {
         customerId: customerReward.customerId,
         rwdNumber: customerReward.rwdNumber,
     }));
-    fetch("http://localhost:8080/TravelExpertsREST_war_exploded/api/customer-reward/post", {
-        method: "POST",
+    fetch("http://localhost:8080/TravelExpertsREST_war_exploded/api/customer-reward/put/batch/", {
+        method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
     }).then(response => {
         if (response.ok) alert("Customer rewards saved!");
+    }).catch(error => {
+        console.error("Error saving customer rewards:", error);
+        alert("Failed to save customer rewards.");
     });
 }
 
@@ -107,8 +110,8 @@ function deleteCustomerReward(customerId, rewardId) {
             customerRewards = customerRewards.filter(customerReward => customerReward.rewardId !== rewardId);
         })
         .catch(error => {
-            console.error("Error saving customer reward:", error);
-            alert("Failed to save customer reward.");
+            console.error("Error deleting customer reward:", error);
+            alert("Failed to delete customer reward.");
         });
 
     populateRewardsSelect();
@@ -151,7 +154,7 @@ function handleAddCustomerReward() {
     const rwdNumber = document.getElementById("rwdNumber").value;
 
     const newCustomerReward = { rewardId: parsedRwdId, customerId: 104, rwdNumber: rwdNumber };
-    // Send the new widget to the backend
+    // Send the new customer reward to the backend
     fetch("http://localhost:8080/TravelExpertsREST_war_exploded/api/customer-reward/post", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
