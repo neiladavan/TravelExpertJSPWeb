@@ -1,76 +1,70 @@
 let rewards = [];
 let customerRewards = [];
 
-function getRewardsAndCustomerRewards() {
-    // Fetch and store rewards.
-    const rewardsFetch = fetch("http://localhost:8080/TravelExpertsREST_war_exploded/api/rewards")
-        .then(response => response.json())
-        .then(data => {
-            rewards = data;
-        });
-    // Fetch and populate customer rewards list
-    const customerRewardsFetch = fetch("http://localhost:8080/TravelExpertsREST_war_exploded/api/customer-reward/get/104")
-        .then(response => response.json())
-        .then(data => {
-            customerRewards = data;
-        });
+async function getRewardsAndCustomerRewards() {
+    try {
+        // $.get() is shorthand for HTTP GET request.
+        const rewardsResponse = await $.get("http://localhost:8080/TravelExpertsREST_war_exploded/api/rewards");
+        const customerRewardsResponse = await $.get("http://localhost:8080/TravelExpertsREST_war_exploded/api/customer-reward/get/104");
 
-    Promise.all([rewardsFetch, customerRewardsFetch])
-        .then(() => {
-            console.log("Rewards fetched.");
-            populateCustomerRewardsTable(customerRewards); // Call after both fetches complete
-        })
-        .catch(error => {
-            console.error("Error fetching data:", error);
-            alert("Failed to fetch rewards.");
-        });
+        rewards = rewardsResponse;
+        customerRewards = customerRewardsResponse;
+
+        console.log("Rewards fetched.");
+        populateCustomerRewardsTable(customerRewards); // Call after both fetches complete
+    } catch (error) {
+        console.error("Error fetching data:", error);
+        alert("Failed to fetch rewards.");
+    }
 }
 
-document.addEventListener("DOMContentLoaded", () => {
+$(document).ready(() => {
     getRewardsAndCustomerRewards();
 
     // Add customer reward button functionality
-    document.getElementById("addCustomerReward").addEventListener("click", () => {
+    $("#addCustomerReward").click(() => {
         populateRewardsSelect();
-        document.getElementById("addCustomerRewardModal").style.display = "block";
+        $("#addCustomerRewardModal").show();
     });
 
     // Close modal functionality
-    document.getElementById("closeModal").addEventListener("click", () => {
-        document.getElementById("addCustomerRewardModal").style.display = "none";
+    $("#closeModal").click(() => {
+        $("#addCustomerRewardModal").hide();
     });
 
-    document.getElementById("addCustomerRewardForm").addEventListener("submit", handleAddCustomerReward);
+    $("#addCustomerRewardForm").submit(handleAddCustomerReward);
 
-    document.getElementById("saveBtn").addEventListener("click", saveCustomerRewards);
+    $("#saveBtn").click(saveCustomerRewards);
 });
 
 function populateCustomerRewardsTable(customerRewards) {
-    const tableBody = document.querySelector("#customerRewardsTable > tbody");
-    tableBody.innerHTML =
-        "<th>Reward Card</th>" +
-        "<th>Reward Number</th>";
+    const tableBody = $("#customerRewardsTable > tbody");
+    tableBody.empty().append("<th>Reward Card</th><th>Reward Number</th>");
+
     customerRewards.forEach(customerReward => {
         const row = createCustomerRewardRow(customerReward);
-        tableBody.appendChild(row);
+        tableBody.append(row);
     });
 }
 
-function createCustomerRewardRow(customerReward){
-    const row = document.createElement("tr");
+function createCustomerRewardRow(customerReward) {
     const associatedReward = rewards.find(reward => reward.id === customerReward.rewardId);
     const rewardName = associatedReward ? associatedReward.rwdName : "N/A";
-    row.innerHTML = `
-        <td>${rewardName}</td>
-        <input value="${customerReward.rwdNumber}" onchange="updateCustomerRewardRwdNumber(${customerReward.rewardId}, this.value)">
-        <td>
-            <button class="deleteCustomerReward">Delete</button>
-        </td>
-        `;
-    row.querySelector(".deleteCustomerReward").addEventListener("click", () => {
+
+    // wrapped in jQuery object for easy manipulation, like .find()
+    const row = $(`
+        <tr>
+            <td>${rewardName}</td>
+            <td><input value="${customerReward.rwdNumber}" onchange="updateCustomerRewardRwdNumber(${customerReward.rewardId}, this.value)"></td>
+            <td><button class="deleteCustomerReward">Delete</button></td>
+        </tr>
+    `);
+
+    row.find(".deleteCustomerReward").click(() => {
         deleteCustomerReward(customerReward.customerId, customerReward.rewardId);
         row.remove();
     });
+
     return row;
 }
 
@@ -80,107 +74,79 @@ function updateCustomerRewardRwdNumber(rewardId, newRwdNumber) {
         customerRewardToUpdate.rwdNumber = newRwdNumber;
     }
 }
+
 function saveCustomerRewards() {
-    // Prepare the payload
-    const payload = customerRewards.map(customerReward => ({
-        rewardId: customerReward.rewardId,
-        customerId: customerReward.customerId,
-        rwdNumber: customerReward.rwdNumber,
-    }));
-    fetch("http://localhost:8080/TravelExpertsREST_war_exploded/api/customer-reward/put/batch/", {
+    $.ajax({
+        url: "http://localhost:8080/TravelExpertsREST_war_exploded/api/customer-reward/put/batch/",
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-    }).then(response => {
-        if (response.ok) alert("Customer rewards saved!");
-    }).catch(error => {
-        console.error("Error saving customer rewards:", error);
-        alert("Failed to save customer rewards.");
+        contentType: "application/json",
+        data: JSON.stringify(customerRewards),
+        success: () => alert("Customer rewards saved!"),
+        error: (error) => {
+            console.error("Error saving customer rewards:", error);
+            alert("Failed to save customer rewards.");
+        }
     });
 }
 
 function deleteCustomerReward(customerId, rewardId) {
-    fetch(`http://localhost:8080/TravelExpertsREST_war_exploded/api/customer-reward/delete/${customerId}/${rewardId}`,
-        { method: "DELETE" })
-        .then(response => {
-            return response.json();
-        })
-        .then(data =>  {
-            console.log("API Response", data);
+    $.ajax({
+        url: `http://localhost:8080/TravelExpertsREST_war_exploded/api/customer-reward/delete/${customerId}/${rewardId}`,
+        method: "DELETE",
+        success: () => {
             customerRewards = customerRewards.filter(customerReward => customerReward.rewardId !== rewardId);
-        })
-        .catch(error => {
+            populateRewardsSelect();
+        },
+        error: (error) => {
             console.error("Error deleting customer reward:", error);
             alert("Failed to delete customer reward.");
-        });
-
-    populateRewardsSelect();
+        }
+    });
 }
 
 function populateRewardsSelect() {
-    const rewardSelect = document.getElementById("rewardSelect");
-    rewardSelect.innerHTML = ""; // Clear existing options
+    const rewardSelect = $("#rewardSelect");
+    rewardSelect.empty();
 
-    // Create a set of reward IDs already used by customer rewards
     const usedRewardIds = new Set(customerRewards.map(customerReward => customerReward.rewardId));
 
-    // Filter rewards and add options to the dropdown
     rewards
-        .filter(reward => !usedRewardIds.has(reward.id)) // Exclude used rewards
+        .filter(reward => !usedRewardIds.has(reward.id))
         .forEach(reward => {
-            const option = document.createElement("option");
-            option.value = reward.id;
-            option.textContent = reward.rwdName;
-            rewardSelect.appendChild(option);
+            rewardSelect.append(`<option value="${reward.id}">${reward.rwdName}</option>`);
         });
 
-    // If no rewards are available, disable the dropdown
-    if (rewardSelect.options.length === 0) {
-        const option = document.createElement("option");
-        option.value = "";
-        option.textContent = "No rewards available";
-        rewardSelect.appendChild(option);
-        rewardSelect.disabled = true;
+    if (rewardSelect.children().length === 0) {
+        rewardSelect.append('<option value="">No rewards available</option>').prop("disabled", true);
     } else {
-        rewardSelect.disabled = false;
+        rewardSelect.prop("disabled", false);
     }
 }
 
-function handleAddCustomerReward() {
+function handleAddCustomerReward(event) {
     event.preventDefault();
 
-    const rwdId = document.getElementById("rewardSelect").value;
-    const parsedRwdId = Number(rwdId);
-    const rwdNumber = document.getElementById("rwdNumber").value;
+    const rwdId = Number($("#rewardSelect").val());
+    const rwdNumber = $("#rwdNumber").val();
+    const newCustomerReward = { rewardId: rwdId, customerId: 104, rwdNumber: rwdNumber };
 
-    const newCustomerReward = { rewardId: parsedRwdId, customerId: 104, rwdNumber: rwdNumber };
-    // Send the new customer reward to the backend
-    fetch("http://localhost:8080/TravelExpertsREST_war_exploded/api/customer-reward/post", {
+    $.ajax({
+        url: "http://localhost:8080/TravelExpertsREST_war_exploded/api/customer-reward/post",
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newCustomerReward),
-    })
-        .then(response => response.json())
-        .then(data => {
-            console.log(data.customerReward);
-            if(data.customerReward) {
-                // Add the saved customer reward to the global array
+        contentType: "application/json",
+        data: JSON.stringify(newCustomerReward),
+        success: (data) => {
+            if (data.customerReward) {
                 customerRewards.push(data.customerReward);
-
-                // Add the new customer reward to the table
-                const tableBody = document.querySelector("#customerRewardsTable tbody");
                 const newRow = createCustomerRewardRow(data.customerReward);
-                tableBody.appendChild(newRow);
-
-                // Repopulate the rewards dropdown
+                $("#customerRewardsTable tbody").append(newRow);
                 populateRewardsSelect();
-
-                // Close the modal
-                document.getElementById("addCustomerRewardModal").style.display = "none";
+                $("#addCustomerRewardModal").hide();
             }
-        })
-        .catch(error => {
+        },
+        error: (error) => {
             console.error("Error saving customer reward:", error);
             alert("Failed to save customer reward.");
-        });
+        }
+    });
 }
