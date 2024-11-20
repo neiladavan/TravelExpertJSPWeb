@@ -5,7 +5,8 @@ async function getRewardsAndCustomerRewards() {
     try {
         // $.get() is shorthand for HTTP GET request.
         const rewardsResponse = await $.get("http://localhost:8080/TravelExpertsREST_war_exploded/api/rewards");
-        const customerRewardsResponse = await $.get("http://localhost:8080/TravelExpertsREST_war_exploded/api/customer-reward/get/104");
+        //const customerRewardsResponse = await $.get("http://localhost:8080/TravelExpertsREST_war_exploded/api/customer-reward/get/104");
+        const customerRewardsResponse = await $.get('/TravelExpertsProductJSP_war_exploded/customer-reward');
 
         rewards = rewardsResponse;
         customerRewards = customerRewardsResponse;
