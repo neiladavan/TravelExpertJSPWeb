@@ -15,6 +15,7 @@ public class LoginServlet extends HttpServlet {
     @Serial
     private static final long serialVersionUID = 1L;
     private String agentFirstName = "";
+    private String userId = "";
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         HttpSession session = request.getSession(false);
@@ -46,8 +47,8 @@ public class LoginServlet extends HttpServlet {
         String username = request.getParameter("username");
         String passwd = request.getParameter("passwd");
 
-        //String hashedPassword = BCrypt.hashpw(passwd, BCrypt.gensalt());
-        //System.out.println(hashedPassword);
+        String hashedPassword = BCrypt.hashpw(passwd, BCrypt.gensalt());
+        System.out.println(hashedPassword);
 
         if (username == null || passwd == null || username.isEmpty() || passwd.isEmpty()) {
             // Invalid input, show login form with error message
@@ -63,6 +64,7 @@ public class LoginServlet extends HttpServlet {
             // Login successful
             HttpSession session = request.getSession();
             session.setAttribute("agentFirstName", agentFirstName);
+            session.setAttribute("userId", userId);
             session.setAttribute("username", username); // Store the user ID in the session
             session.setAttribute("isAuthenticated", true); // Optional: set an authentication flag
 
@@ -93,7 +95,7 @@ public class LoginServlet extends HttpServlet {
             // Query to check if the user exists with the provided password
             //String query = "SELECT * FROM users WHERE username = ?";
             String query = """
-                    SELECT u.username, u.password, a.AgtFirstName
+                    SELECT u.agentId as userId, u.username, u.password, a.AgtFirstName
                     FROM users u
                     INNER JOIN agents a ON u.agentId = a.AgentId
                     WHERE u.username = ?;""";
@@ -105,6 +107,7 @@ public class LoginServlet extends HttpServlet {
             if (resultSet.next()) {
                 String storedHash = resultSet.getString("password");
                 agentFirstName = resultSet.getString("AgtFirstName");
+                userId = resultSet.getString("userId");
                 if (BCrypt.checkpw(passwd, storedHash)) isValid = true;
             }
         } catch (SQLException e) {
