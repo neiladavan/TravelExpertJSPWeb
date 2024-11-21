@@ -129,7 +129,7 @@ function handleAddCustomerReward(event) {
 
     const rwdId = Number($("#rewardSelect").val());
     const rwdNumber = $("#rwdNumber").val();
-        const newCustomerReward = { rewardId: rwdId, customerId: 104, rwdNumber: rwdNumber };
+        const newCustomerReward = { rewardId: rwdId, rwdNumber: rwdNumber };
 
     $.ajax({
         //url: "http://localhost:8080/TravelExpertsREST_war_exploded/api/customer-reward/post",
