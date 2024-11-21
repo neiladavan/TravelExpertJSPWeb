@@ -75,7 +75,7 @@ async function addOrUpdate() {
     try {
         if (id) {
             packageData.id = id;
-            const response = await fetch(`http://localhost:8080/TravelExpertsREST_war_exploded/api/packages/putpackage`, {
+            const response = await fetch(`http://localhost:8080/TravelExpertsREST_war_exploded/api/packages/`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json'
@@ -87,7 +87,7 @@ async function addOrUpdate() {
             await getPackages();
             alert("Package updated successfully!");
         } else {
-            const response = await fetch(`http://localhost:8080/TravelExpertsREST_war_exploded/api/packages/postpackage`, {
+            const response = await fetch(`http://localhost:8080/TravelExpertsREST_war_exploded/api/packages/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -131,7 +131,7 @@ $(document).ready(function() {
         }
     });
 
-    $('#packageForm').on('submit', async function() {
+    $('#addOrUpdatePackageButton').on('click', async function() {
         await addOrUpdate();
     });
 
