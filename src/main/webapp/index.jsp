@@ -51,7 +51,7 @@
         </div>
 
         <div class="d-flex justify-content-end">
-            <button type="submit" id="addOrUpdatePackageButton" class="btn btn-primary me-2">Save</button>
+            <button type="button" id="addOrUpdatePackageButton" class="btn btn-primary me-2">Save</button>
             <button type="button" id="deletePackageButton" class="btn btn-danger">Delete Package</button>
         </div>
     </form>
