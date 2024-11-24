@@ -1,5 +1,6 @@
 <%@ include file="header.jsp" %>
 <script src="register.js"></script>
+<a href="index.jsp" class="btn btn-outline-secondary">Home</a>
 <div class="row justify-content-center">
   <div class="col-md-6">
     <div class="card shadow-sm">

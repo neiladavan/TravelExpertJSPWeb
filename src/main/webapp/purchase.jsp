@@ -18,6 +18,7 @@
 </head>
 <body>
 <div class="container">
+    <a href="index.jsp" class="btn btn-outline-secondary">Home</a>
     <h1>Product Details</h1>
     <table class="table">
         <tbody>

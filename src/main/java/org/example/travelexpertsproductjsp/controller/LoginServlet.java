@@ -126,6 +126,7 @@ public class LoginServlet extends HttpServlet {
         out.println("<link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css\">");
         out.println("</head>");
         out.println("<body>");
+        out.println("<a href=\"index.jsp\" class=\"btn btn-outline-secondary\">Home</a>");
         out.println("<div class=\"container\">");
         out.println("<h1>Login Page</h1>");
         if (errorMessage != null) {
