@@ -14,7 +14,7 @@ import org.mindrot.jbcrypt.BCrypt;
 public class LoginServlet extends HttpServlet {
     @Serial
     private static final long serialVersionUID = 1L;
-    private String agentFirstName = "";
+    private String customerFirstName = "";
     private String userId = "";
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -63,7 +63,7 @@ public class LoginServlet extends HttpServlet {
         if (checkLogin(username, passwd)) {
             // Login successful
             HttpSession session = request.getSession();
-            session.setAttribute("agentFirstName", agentFirstName);
+            session.setAttribute("customerFirstName", customerFirstName);
             session.setAttribute("userId", userId);
             session.setAttribute("username", username); // Store the user ID in the session
             session.setAttribute("isAuthenticated", true); // Optional: set an authentication flag
@@ -95,9 +95,9 @@ public class LoginServlet extends HttpServlet {
             // Query to check if the user exists with the provided password
             //String query = "SELECT * FROM users WHERE username = ?";
             String query = """
-                    SELECT u.agentId as userId, u.username, u.password, a.AgtFirstName
+                    SELECT u.customerId as userId, u.username, u.password, c.CustFirstName as customerFirstName
                     FROM users u
-                    INNER JOIN agents a ON u.agentId = a.AgentId
+                    INNER JOIN customers c ON u.customerId = c.CustomerId
                     WHERE u.username = ?;""";
             statement = DatabaseUtil.createPreparedStatement(connection, query, username);
 
@@ -106,7 +106,7 @@ public class LoginServlet extends HttpServlet {
             // If a record is found, login is valid
             if (resultSet.next()) {
                 String storedHash = resultSet.getString("password");
-                agentFirstName = resultSet.getString("AgtFirstName");
+                customerFirstName = resultSet.getString("customerFirstName");
                 userId = resultSet.getString("userId");
                 if (BCrypt.checkpw(passwd, storedHash)) isValid = true;
             }
