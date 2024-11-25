@@ -23,7 +23,7 @@
   <header class="heading">
     <h1>Travel Experts Products JSP Application</h1>
     <h2 class="message">${message}</h2>
-    <c:if test="${not empty sessionScope.agentFirstName}">
-      <p>Welcome, <c:out value="${sessionScope.agentFirstName}" />!</p>
+    <c:if test="${not empty sessionScope.customerFirstName}">
+      <p>Welcome, <c:out value="${sessionScope.customerFirstName}" />!</p>
     </c:if>
   </header>
