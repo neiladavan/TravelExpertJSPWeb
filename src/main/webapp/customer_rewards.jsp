@@ -8,8 +8,8 @@
     <script src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js"></script>
 </head>
 <body>
-<h1><%= "Customer Rewards" %>
-</h1>
+<a href="index.jsp" class="btn btn-outline-secondary">Home</a>
+<h1>Customer Rewards</h1>
 <button id="addCustomerReward">Add</button>
 <table id="customerRewardsTable">
     <tbody>
